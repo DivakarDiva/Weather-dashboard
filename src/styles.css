@@ -19,6 +19,8 @@
  */
 
 @theme inline {
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -140,5 +142,164 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+/* ---- Weather app design system ---- */
+
+:root {
+  --radius: 1.25rem;
+  --background: oklch(0.982 0.008 240);
+  --foreground: oklch(0.21 0.03 250);
+  --card: oklch(1 0 0 / 72%);
+  --card-foreground: oklch(0.21 0.03 250);
+  --popover: oklch(0.995 0.004 240);
+  --popover-foreground: oklch(0.21 0.03 250);
+  --primary: oklch(0.55 0.16 245);
+  --primary-foreground: oklch(0.99 0.005 240);
+  --secondary: oklch(0.95 0.015 240);
+  --secondary-foreground: oklch(0.3 0.04 250);
+  --muted: oklch(0.955 0.012 240);
+  --muted-foreground: oklch(0.52 0.03 250);
+  --accent: oklch(0.93 0.04 235);
+  --accent-foreground: oklch(0.28 0.05 250);
+  --border: oklch(0.5 0.04 250 / 14%);
+  --input: oklch(0.5 0.04 250 / 18%);
+  --ring: oklch(0.55 0.16 245);
+  --scene-from: oklch(0.94 0.05 235);
+  --scene-via: oklch(0.97 0.025 250);
+  --scene-to: oklch(0.98 0.02 90);
+  --shadow-card: 0 1px 2px oklch(0.3 0.05 250 / 6%), 0 18px 40px -24px oklch(0.3 0.06 250 / 35%);
+}
+
+.dark {
+  --background: oklch(0.19 0.03 260);
+  --foreground: oklch(0.97 0.006 250);
+  --card: oklch(0.29 0.035 260 / 55%);
+  --card-foreground: oklch(0.97 0.006 250);
+  --popover: oklch(0.24 0.035 260);
+  --popover-foreground: oklch(0.97 0.006 250);
+  --primary: oklch(0.75 0.13 240);
+  --primary-foreground: oklch(0.2 0.04 260);
+  --secondary: oklch(0.3 0.035 260);
+  --secondary-foreground: oklch(0.95 0.01 250);
+  --muted: oklch(0.3 0.03 260);
+  --muted-foreground: oklch(0.75 0.025 255);
+  --accent: oklch(0.36 0.05 260);
+  --accent-foreground: oklch(0.96 0.01 250);
+  --border: oklch(0.95 0.02 250 / 12%);
+  --input: oklch(0.95 0.02 250 / 16%);
+  --ring: oklch(0.75 0.13 240);
+  --scene-from: oklch(0.26 0.05 265);
+  --scene-via: oklch(0.21 0.035 260);
+  --scene-to: oklch(0.22 0.04 245);
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 30%), 0 20px 50px -28px oklch(0 0 0 / 70%);
+}
+
+[data-scene="clear"] {
+  --scene-from: oklch(0.93 0.07 235);
+  --scene-via: oklch(0.97 0.04 95);
+  --scene-to: oklch(0.98 0.03 80);
+}
+[data-scene="cloudy"],
+[data-scene="fog"] {
+  --scene-from: oklch(0.93 0.02 245);
+  --scene-via: oklch(0.96 0.012 250);
+  --scene-to: oklch(0.94 0.02 235);
+}
+[data-scene="rain"],
+[data-scene="drizzle"],
+[data-scene="snow"] {
+  --scene-from: oklch(0.9 0.045 240);
+  --scene-via: oklch(0.95 0.02 245);
+  --scene-to: oklch(0.93 0.03 225);
+}
+[data-scene="storm"] {
+  --scene-from: oklch(0.88 0.04 300);
+  --scene-via: oklch(0.92 0.025 280);
+  --scene-to: oklch(0.9 0.03 260);
+}
+[data-scene="night"] {
+  --scene-from: oklch(0.88 0.05 265);
+  --scene-via: oklch(0.93 0.03 260);
+  --scene-to: oklch(0.95 0.02 250);
+}
+
+.dark [data-scene="clear"] {
+  --scene-from: oklch(0.3 0.06 250);
+  --scene-via: oklch(0.22 0.04 258);
+  --scene-to: oklch(0.24 0.05 70);
+}
+.dark [data-scene="storm"] {
+  --scene-from: oklch(0.26 0.07 300);
+  --scene-via: oklch(0.2 0.04 285);
+  --scene-to: oklch(0.19 0.03 265);
+}
+.dark [data-scene="night"] {
+  --scene-from: oklch(0.24 0.05 265);
+  --scene-via: oklch(0.18 0.035 262);
+  --scene-to: oklch(0.2 0.04 250);
+}
+
+@theme inline {
+  --color-scene-from: var(--scene-from);
+  --color-scene-via: var(--scene-via);
+  --color-scene-to: var(--scene-to);
+}
+
+@utility scene-surface {
+  background-image: linear-gradient(
+    160deg,
+    var(--scene-from) 0%,
+    var(--scene-via) 45%,
+    var(--scene-to) 100%
+  );
+  transition: background-image 400ms ease;
+}
+
+@utility glass-card {
+  background-color: var(--card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(14px);
+}
+
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  body {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
