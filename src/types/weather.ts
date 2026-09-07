@@ -5,7 +5,7 @@ export interface GeoLocation {
   country: string;
   latitude: number;
   longitude: number;
-  timezone?: string;
+  timezone?: string | undefined;
 }
 
 export type WeatherKind =

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface RecentLocationsProps {
   recents: GeoLocation[];
-  activeId?: string;
+  activeId?: string | undefined;
   onSelect: (location: GeoLocation) => void;
   onRemove: (location: GeoLocation) => void;
   onClear: () => void;
