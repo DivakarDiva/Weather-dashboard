@@ -50,7 +50,7 @@ function normalizeGeoResult(raw: RawGeoResult): GeoLocation | null {
 async function request(url: string, signal?: AbortSignal): Promise<unknown> {
   let response: Response;
   try {
-    response = await fetch(url, { signal });
+    response = await fetch(url, signal ? { signal } : {});
   } catch (error) {
     if ((error as Error).name === "AbortError") throw error;
     throw new WeatherServiceError(
