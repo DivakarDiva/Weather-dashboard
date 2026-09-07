@@ -51,8 +51,15 @@ function normalize(raw: RawForecast, location: GeoLocation): WeatherBundle {
   const hourlyRaw = raw.hourly ?? {};
   const dailyRaw = raw.daily ?? {};
 
-  const hourlyTimes = Array.isArray(hourlyRaw.time) ? (hourlyRaw.time as string[]) : [];
-  const dailyTimes = Array.isArray(dailyRaw.time) ? (dailyRaw.time as string[]) : [];
+  const cur = (key: string): number | undefined => {
+    const value = current[key];
+    return typeof value === "number" ? value : undefined;
+  };
+
+  const hourlyTimes = Array.isArray(hourlyRaw["time"])
+    ? (hourlyRaw["time"] as string[])
+    : [];
+  const dailyTimes = Array.isArray(dailyRaw["time"]) ? (dailyRaw["time"] as string[]) : [];
 
   if (dailyTimes.length === 0) {
     throw new WeatherServiceError(
@@ -71,33 +78,39 @@ function normalize(raw: RawForecast, location: GeoLocation): WeatherBundle {
     .slice(startIndex, startIndex + 24)
     .map((time, offset) => {
       const index = startIndex + offset;
-      const code = numberAt(hourlyRaw.weather_code, index);
+      const code = numberAt(hourlyRaw["weather_code"], index);
       return {
         time,
-        temperature: numberAt(hourlyRaw.temperature_2m, index),
-        precipitationProbability: numberAt(hourlyRaw.precipitation_probability, index),
+        temperature: numberAt(hourlyRaw["temperature_2m"], index),
+        precipitationProbability: numberAt(
+          hourlyRaw["precipitation_probability"],
+          index,
+        ),
         code,
         kind: weatherKind(code),
-        isDay: numberAt(hourlyRaw.is_day, index) === 1,
+        isDay: numberAt(hourlyRaw["is_day"], index) === 1,
       };
     });
 
   const daily: DailyPoint[] = dailyTimes.map((date, index) => {
-    const code = numberAt(dailyRaw.weather_code, index);
+    const code = numberAt(dailyRaw["weather_code"], index);
     return {
       date,
-      max: numberAt(dailyRaw.temperature_2m_max, index),
-      min: numberAt(dailyRaw.temperature_2m_min, index),
+      max: numberAt(dailyRaw["temperature_2m_max"], index),
+      min: numberAt(dailyRaw["temperature_2m_min"], index),
       code,
       kind: weatherKind(code),
       condition: describeCode(code).label,
-      precipitationProbability: numberAt(dailyRaw.precipitation_probability_max, index),
+      precipitationProbability: numberAt(
+        dailyRaw["precipitation_probability_max"],
+        index,
+      ),
     };
   });
 
-  const code = typeof current.weather_code === "number" ? current.weather_code : 0;
+  const code = cur("weather_code") ?? 0;
   const info = describeCode(code);
-  const isDay = current.is_day === 1;
+  const isDay = cur("is_day") === 1;
 
   return {
     timezone: raw.timezone ?? "auto",
@@ -106,21 +119,21 @@ function normalize(raw: RawForecast, location: GeoLocation): WeatherBundle {
     current: {
       location: location.name,
       country: location.country,
-      temperature: current.temperature_2m ?? 0,
-      feelsLike: current.apparent_temperature ?? current.temperature_2m ?? 0,
+      temperature: cur("temperature_2m") ?? 0,
+      feelsLike: cur("apparent_temperature") ?? cur("temperature_2m") ?? 0,
       high: daily[0]?.max ?? 0,
       low: daily[0]?.min ?? 0,
       condition: info.label,
       description: info.label,
-      humidity: current.relative_humidity_2m ?? 0,
-      windSpeed: current.wind_speed_10m ?? 0,
-      windDirection: current.wind_direction_10m ?? 0,
-      pressure: Math.round(current.surface_pressure ?? 0),
-      visibility: current.visibility ?? 0,
-      uvIndex: numberAt(dailyRaw.uv_index_max, 0),
+      humidity: cur("relative_humidity_2m") ?? 0,
+      windSpeed: cur("wind_speed_10m") ?? 0,
+      windDirection: cur("wind_direction_10m") ?? 0,
+      pressure: Math.round(cur("surface_pressure") ?? 0),
+      visibility: cur("visibility") ?? 0,
+      uvIndex: numberAt(dailyRaw["uv_index_max"], 0),
       precipitationProbability: daily[0]?.precipitationProbability ?? 0,
-      sunrise: stringAt(dailyRaw.sunrise, 0),
-      sunset: stringAt(dailyRaw.sunset, 0),
+      sunrise: stringAt(dailyRaw["sunrise"], 0),
+      sunset: stringAt(dailyRaw["sunset"], 0),
       isDay,
       kind: info.kind,
       code,

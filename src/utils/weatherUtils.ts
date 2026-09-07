@@ -84,8 +84,8 @@ const COMPASS = [
 ];
 
 export function windDirectionLabel(degrees: number): string {
-  const index = Math.round(((degrees % 360) + 360) % 360 / 22.5) % 16;
-  return COMPASS[index];
+  const index = Math.round(((((degrees % 360) + 360) % 360) / 22.5)) % 16;
+  return COMPASS[index] ?? "N";
 }
 
 export function buildSummary(params: {
